@@ -94,7 +94,7 @@ export default async function ExhibitionPage() {
                     loading="lazy"
                   />
                 </div>
-                <h2 className="font-[family-name:var(--font-montserrat)] font-medium text-white/80 group-hover:text-white transition-colors duration-150">
+                <h2 className="font-[family-name:var(--font-montserrat)] font-medium text-white group-hover:text-gold transition-colors duration-150">
                   {frame.title}
                 </h2>
               </Link>

@@ -189,11 +189,19 @@ export default function AdminPage() {
 
   async function uploadSupplement(file: File) {
     if (supplementImages.length >= 10) return;
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: form });
-    const data = await res.json();
-    if (data.url) setSupplementImages((prev) => [...prev, data.url].slice(0, 10));
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const data = await res.json();
+      if (data.url) {
+        setSupplementImages((prev) => [...prev, data.url].slice(0, 10));
+      } else {
+        console.error("Upload failed:", data.error);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    }
   }
 
   const handleSupplementDrop = useCallback((e: React.DragEvent) => {
