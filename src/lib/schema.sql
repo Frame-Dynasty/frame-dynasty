@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS frames (
   supplement_images JSONB DEFAULT '[]',
   credits JSONB DEFAULT '[]',
   video_url TEXT,
+  audio_url TEXT,
   accent_color TEXT,
   created_by TEXT,
   updated_by TEXT,

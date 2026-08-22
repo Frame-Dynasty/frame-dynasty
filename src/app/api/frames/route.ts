@@ -17,6 +17,7 @@ function resolveFrame(frame: Record<string, unknown>) {
     ...frame,
     image_url: resolveUrl(frame.image_url as string),
     blur_data: frame.blur_data ? resolveUrl(frame.blur_data as string) : null,
+    audio_url: frame.audio_url ? resolveUrl(frame.audio_url as string) : null,
     supplement_images: Array.isArray(frame.supplement_images)
       ? (frame.supplement_images as string[]).map(resolveUrl)
       : [],
@@ -25,13 +26,13 @@ function resolveFrame(frame: Record<string, unknown>) {
 
 export async function GET() {
   const frames = await query(
-    "SELECT id, title, story, image_url, blur_data, supplement_images, credits, accent_color, created_at FROM frames ORDER BY created_at DESC"
+    "SELECT id, title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color, created_at FROM frames ORDER BY created_at DESC"
   );
   return NextResponse.json(frames.map(resolveFrame));
 }
 
 export async function POST(request: Request) {
-  const { title, story, image_url, blur_data, supplement_images, credits, accent_color, admin_name } =
+  const { title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color, admin_name } =
     await request.json();
 
   if (!title || !story || !image_url) {
@@ -46,9 +47,9 @@ export async function POST(request: Request) {
   const allCredits = credits?.length ? credits : [];
 
   await query(
-    `INSERT INTO frames (id, title, story, image_url, blur_data, supplement_images, credits, accent_color, created_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [id, title, story, image_url, blur_data || null, JSON.stringify(supImages), JSON.stringify(allCredits), accent_color || null, admin_name || null]
+    `INSERT INTO frames (id, title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color, created_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+    [id, title, story, image_url, blur_data || null, audio_url || null, JSON.stringify(supImages), JSON.stringify(allCredits), accent_color || null, admin_name || null]
   );
 
   const url = `https://framedynasty.com.ng/f/${id}`;
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const { id, title, story, image_url, blur_data, supplement_images, credits, accent_color, admin_name } =
+  const { id, title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color, admin_name } =
     await request.json();
 
   if (!id) {
@@ -72,13 +73,13 @@ export async function PUT(request: Request) {
 
   await query(
     `UPDATE frames SET title = COALESCE($2, title), story = COALESCE($3, story),
-     image_url = COALESCE($4, image_url), blur_data = $5,
-     supplement_images = COALESCE($6, supplement_images),
-     credits = COALESCE($7, credits), accent_color = $8, updated_by = $9
+     image_url = COALESCE($4, image_url), blur_data = $5, audio_url = $6,
+     supplement_images = COALESCE($7, supplement_images),
+     credits = COALESCE($8, credits), accent_color = $9, updated_by = $10
      WHERE id = $1`,
     [
       id, title, story, image_url,
-      blur_data || null,
+      blur_data || null, audio_url || null,
       supImages ? JSON.stringify(supImages) : null,
       allCredits !== undefined ? JSON.stringify(allCredits) : null,
       accent_color || null, admin_name || null,

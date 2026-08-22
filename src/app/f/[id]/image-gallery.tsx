@@ -32,7 +32,7 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10 z-10">
           <h1
-            className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_16px_rgba(0,0,0,1)] break-words"
+            className="font-[family-name:var(--font-handorty)] text-2xl md:text-4xl text-white drop-shadow-[0_2px_16px_rgba(0,0,0,1)] break-words"
             style={accentColor ? { color: accentColor } : undefined}
           >
             {title}

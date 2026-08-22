@@ -24,6 +24,7 @@ interface Frame {
   story: string;
   image_url: string;
   blur_data: string | null;
+  audio_url: string | null;
   supplement_images: string[];
   credits: Record<string, string | { name: string; url?: string }>;
   accent_color: string | null;
@@ -79,7 +80,7 @@ export default async function FramePage({
   const { id } = await params;
 
   const frame = await queryOne<Frame>(
-    "SELECT id, title, story, image_url, blur_data, supplement_images, credits, accent_color FROM frames WHERE id = $1",
+    "SELECT id, title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color FROM frames WHERE id = $1",
     [id]
   );
 
@@ -87,6 +88,7 @@ export default async function FramePage({
 
   frame.image_url = resolveUrl(frame.image_url);
   frame.blur_data = resolveUrl(frame.blur_data);
+  frame.audio_url = resolveUrl(frame.audio_url);
   frame.supplement_images = (frame.supplement_images || []).map(resolveUrl);
 
   const credits: Record<string, string | { name: string; url?: string }> = frame.credits || {};
@@ -117,6 +119,18 @@ export default async function FramePage({
       />
 
       <section className="max-w-[var(--max-text-width)] mx-auto px-6 py-12 md:py-16">
+        {/* Audio player */}
+        {frame.audio_url && (
+          <div className="mb-8 p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-4 animate-slide-up-delay-1">
+            <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+              </svg>
+            </div>
+            <audio controls src={frame.audio_url} className="flex-1 h-8" />
+          </div>
+        )}
+
         <div className="animate-slide-up-delay-2">
           <div
             className="font-[family-name:var(--font-montserrat)] text-white/80 leading-relaxed text-base md:text-lg space-y-6

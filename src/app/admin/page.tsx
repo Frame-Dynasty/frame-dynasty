@@ -15,6 +15,7 @@ interface Frame {
   supplement_images: string[];
   credits: Record<string, string>;
   accent_color: string | null;
+  audio_url: string | null;
   created_at: string;
 }
 
@@ -83,6 +84,9 @@ export default function AdminPage() {
   const [autoAccent, setAutoAccent] = useState(true);
   const [supplementImages, setSupplementImages] = useState<string[]>([]);
   const [blurData, setBlurData] = useState("");
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioBlobUrl, setAudioBlobUrl] = useState("");
+  const [uploadingAudio, setUploadingAudio] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -99,6 +103,7 @@ export default function AdminPage() {
   const svgRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supplementInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
   const imgPreviewRef = useRef<HTMLImageElement>(null);
 
   const isSuperuser = adminName === "superuser";
@@ -197,6 +202,17 @@ export default function AdminPage() {
     files.slice(0, 10 - supplementImages.length).forEach(uploadSupplement);
   }, [supplementImages.length]);
 
+  async function uploadAudio(file: File) {
+    setUploadingAudio(true);
+    setAudioBlobUrl(URL.createObjectURL(file));
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: form });
+    const data = await res.json();
+    if (data.url) setAudioUrl(data.url);
+    setUploadingAudio(false);
+  }
+
   // Auth
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -232,6 +248,8 @@ export default function AdminPage() {
     setAutoAccent(true);
     setSupplementImages([]);
     setBlurData("");
+    setAudioUrl("");
+    setAudioBlobUrl("");
     setQrData(null);
   }
 
@@ -254,6 +272,8 @@ export default function AdminPage() {
     setAutoAccent(false);
     setSupplementImages(frame.supplement_images || []);
     setBlurData(frame.blur_data || "");
+    setAudioUrl(frame.audio_url || "");
+    setAudioBlobUrl("");
     setQrData(null);
   }
 
@@ -275,6 +295,7 @@ export default function AdminPage() {
       story,
       image_url: !editing || imageChanged ? imageUrl : undefined,
       blur_data: blurData || null,
+      audio_url: audioUrl || null,
       supplement_images: supplementImages,
       credits: creditsObj,
       accent_color: accentColor || null,
@@ -507,6 +528,45 @@ export default function AdminPage() {
                   <div>
                     <label className="block text-white/40 text-xs font-[family-name:var(--font-montserrat)] mb-1.5">Story</label>
                     <RichTextEditor value={story} onChange={setStory} placeholder="Write the story..." />
+                  </div>
+
+                  {/* Audio (optional) */}
+                  <div>
+                    <label className="block text-white/40 text-xs font-[family-name:var(--font-montserrat)] mb-1.5">
+                      Audio (optional - listen instead of read)
+                    </label>
+                    {audioUrl ? (
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                        <svg className="w-5 h-5 text-gold flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                        <audio controls src={audioBlobUrl || audioUrl} className="h-8 flex-1 min-w-0" />
+                        <button type="button" onClick={() => { setAudioUrl(""); setAudioBlobUrl(""); }}
+                          className="text-white/30 hover:text-red-400 transition-colors p-1 flex-shrink-0">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => audioInputRef.current?.click()}
+                        className="w-full h-20 rounded-lg border-2 border-dashed border-white/20 hover:border-white/30 transition-colors cursor-pointer flex items-center justify-center"
+                      >
+                        <input ref={audioInputRef} type="file" accept="audio/*" className="hidden"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAudio(f); }} />
+                        {uploadingAudio ? (
+                          <div className="w-5 h-5 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <div className="text-center">
+                            <svg className="w-6 h-6 text-white/20 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
+                            </svg>
+                            <span className="text-white/30 text-xs font-[family-name:var(--font-montserrat)]">Click to upload audio</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Accent color */}
