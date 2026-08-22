@@ -6,6 +6,13 @@ import { generateStyledQR } from "@/lib/qr";
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 7);
 const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
 
+function toRelative(url: string): string {
+  if (!url) return url;
+  // Strip any domain, keep only the path
+  const match = url.match(/^https?:\/\/[^/]+(\/.+)$/);
+  return match ? match[1] : url;
+}
+
 function resolveUrl(path: string | null): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
@@ -43,13 +50,15 @@ export async function POST(request: Request) {
   }
 
   const id = nanoid();
-  const supImages = supplement_images?.length ? supplement_images.slice(0, 10) : [];
+  const supImages = supplement_images?.length
+    ? supplement_images.slice(0, 10).map(toRelative)
+    : [];
   const allCredits = credits?.length ? credits : [];
 
   await query(
     `INSERT INTO frames (id, title, story, image_url, blur_data, audio_url, supplement_images, credits, accent_color, created_by)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-    [id, title, story, image_url, blur_data || null, audio_url || null, JSON.stringify(supImages), JSON.stringify(allCredits), accent_color || null, admin_name || null]
+    [id, title, story, toRelative(image_url), blur_data ? toRelative(blur_data) : null, audio_url ? toRelative(audio_url) : null, JSON.stringify(supImages), JSON.stringify(allCredits), accent_color || null, admin_name || null]
   );
 
   const url = `https://framedynasty.com.ng/f/${id}`;
@@ -67,7 +76,7 @@ export async function PUT(request: Request) {
   }
 
   const supImages = supplement_images !== undefined
-    ? (supplement_images?.length ? supplement_images.slice(0, 10) : [])
+    ? (supplement_images?.length ? supplement_images.slice(0, 10).map(toRelative) : [])
     : undefined;
   const allCredits = credits !== undefined ? credits : undefined;
 
@@ -78,8 +87,10 @@ export async function PUT(request: Request) {
      credits = COALESCE($8, credits), accent_color = $9, updated_by = $10
      WHERE id = $1`,
     [
-      id, title, story, image_url,
-      blur_data || null, audio_url || null,
+      id, title, story,
+      image_url ? toRelative(image_url) : undefined,
+      blur_data ? toRelative(blur_data) : null,
+      audio_url ? toRelative(audio_url) : null,
       supImages ? JSON.stringify(supImages) : null,
       allCredits !== undefined ? JSON.stringify(allCredits) : null,
       accent_color || null, admin_name || null,
