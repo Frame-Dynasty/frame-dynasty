@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { query } from "@/lib/db";
+import LazyImage from "@/components/lazy-image";
 
 export const dynamic = "force-dynamic";
 
@@ -7,13 +8,14 @@ interface Frame {
   id: string;
   title: string;
   image_url: string;
+  blur_data: string | null;
 }
 
 export default async function HomePage() {
   let frames: Frame[] = [];
   try {
     frames = await query<Frame>(
-      "SELECT id, title, image_url FROM frames ORDER BY created_at DESC LIMIT 4"
+      "SELECT id, title, image_url, blur_data FROM frames ORDER BY created_at DESC LIMIT 4"
     );
   } catch {
     // DB not set up yet
@@ -75,10 +77,11 @@ export default async function HomePage() {
             {frames.map((frame) => (
               <Link key={frame.id} href={`/f/${frame.id}`} className="group block">
                 <div className="aspect-[3/4] overflow-hidden rounded-lg bg-white/5 mb-3">
-                  <img
+                  <LazyImage
                     src={frame.image_url}
                     alt={frame.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    blur={frame.blur_data || undefined}
+                    className="w-full h-full"
                     loading="lazy"
                   />
                 </div>

@@ -3,12 +3,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar, { SidebarSection } from "@/components/sidebar";
 import { extractDominantColor } from "@/lib/color-extract";
+import LazyImage, { generateBlur } from "@/components/lazy-image";
 
 interface Frame {
   id: string;
   title: string;
   story: string;
   image_url: string;
+  blur_data: string | null;
   supplement_images: string[];
   credits: Record<string, string>;
   accent_color: string | null;
@@ -74,10 +76,11 @@ export default function AdminPage() {
   const [story, setStory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [blobUrl, setBlobUrl] = useState("");
-  const [credits, setCredits] = useState<{ key: string; value: string }[]>([]);
+  const [credits, setCredits] = useState<{ key: string; value: string; url: string }[]>([]);
   const [accentColor, setAccentColor] = useState("");
   const [autoAccent, setAutoAccent] = useState(true);
   const [supplementImages, setSupplementImages] = useState<string[]>([]);
+  const [blurData, setBlurData] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -154,11 +157,18 @@ export default function AdminPage() {
     const preview = URL.createObjectURL(file);
     setBlobUrl(preview);
 
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: form });
-    const data = await res.json();
-    if (data.url) setImageUrl(data.url);
+    const [blur] = await Promise.all([
+      generateBlur(file),
+      (async () => {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: form });
+        const data = await res.json();
+        if (data.url) setImageUrl(data.url);
+      })(),
+    ]);
+
+    if (blur) setBlurData(blur);
     setUploading(false);
   }
 
@@ -217,6 +227,7 @@ export default function AdminPage() {
     setAccentColor("");
     setAutoAccent(true);
     setSupplementImages([]);
+    setBlurData("");
     setQrData(null);
   }
 
@@ -227,10 +238,17 @@ export default function AdminPage() {
     setImageUrl(frame.image_url);
     setBlobUrl("");
     const c = frame.credits || {};
-    setCredits(Object.entries(c).map(([key, value]) => ({ key, value })));
+    setCredits(
+      Object.entries(c).map(([key, val]) => ({
+        key,
+        value: typeof val === "string" ? val : (val as { name: string }).name || "",
+        url: typeof val === "string" ? "" : (val as { url?: string }).url || "",
+      }))
+    );
     setAccentColor(frame.accent_color || "");
     setAutoAccent(false);
     setSupplementImages(frame.supplement_images || []);
+    setBlurData(frame.blur_data || "");
     setQrData(null);
   }
 
@@ -238,13 +256,20 @@ export default function AdminPage() {
     e.preventDefault();
     if (!imageUrl) return;
     setSaving(true);
-    const creditsObj: Record<string, string> = {};
-    credits.filter((c) => c.key.trim()).forEach((c) => { creditsObj[c.key.trim()] = c.value.trim(); });
+    const creditsObj: Record<string, string | { name: string; url?: string }> = {};
+    credits.filter((c) => c.key.trim()).forEach((c) => {
+      if (c.url.trim()) {
+        creditsObj[c.key.trim()] = { name: c.value.trim(), url: c.url.trim() };
+      } else {
+        creditsObj[c.key.trim()] = c.value.trim();
+      }
+    });
     const body = {
       ...(editing ? { id: editing.id } : {}),
       title,
       story,
       image_url: imageUrl,
+      blur_data: blurData || null,
       supplement_images: supplementImages,
       credits: creditsObj,
       accent_color: accentColor || null,
@@ -503,26 +528,31 @@ export default function AdminPage() {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-white/40 text-xs font-[family-name:var(--font-montserrat)]">Credits (optional)</label>
-                      <button type="button" onClick={() => setCredits((prev) => [...prev, { key: "", value: "" }])}
+                      <button type="button" onClick={() => setCredits((prev) => [...prev, { key: "", value: "", url: "" }])}
                         className="text-gold/60 hover:text-gold text-xs font-[family-name:var(--font-montserrat)] transition-colors">
                         + Add
                       </button>
                     </div>
                     <div className="space-y-2">
                       {credits.map((c, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                          <input type="text" value={c.key} placeholder="Role (e.g. Camera)"
-                            onChange={(e) => setCredits((prev) => prev.map((x, j) => j === i ? { ...x, key: e.target.value } : x))}
-                            className="w-2/5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-sm focus:outline-none focus:border-gold/50 transition-colors" />
-                          <input type="text" value={c.value} placeholder="Name"
-                            onChange={(e) => setCredits((prev) => prev.map((x, j) => j === i ? { ...x, value: e.target.value } : x))}
-                            className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-sm focus:outline-none focus:border-gold/50 transition-colors" />
-                          <button type="button" onClick={() => setCredits((prev) => prev.filter((_, j) => j !== i))}
-                            className="text-white/20 hover:text-red-400 p-1.5 transition-colors flex-shrink-0">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
+                        <div key={i} className="space-y-1">
+                          <div className="flex gap-2 items-center">
+                            <input type="text" value={c.key} placeholder="Role (e.g. Camera)"
+                              onChange={(e) => setCredits((prev) => prev.map((x, j) => j === i ? { ...x, key: e.target.value } : x))}
+                              className="w-2/5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-sm focus:outline-none focus:border-gold/50 transition-colors" />
+                            <input type="text" value={c.value} placeholder="Name"
+                              onChange={(e) => setCredits((prev) => prev.map((x, j) => j === i ? { ...x, value: e.target.value } : x))}
+                              className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-sm focus:outline-none focus:border-gold/50 transition-colors" />
+                            <button type="button" onClick={() => setCredits((prev) => prev.filter((_, j) => j !== i))}
+                              className="text-white/20 hover:text-red-400 p-1.5 transition-colors flex-shrink-0">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                          <input type="url" value={c.url || ""} placeholder="URL (optional)"
+                            onChange={(e) => setCredits((prev) => prev.map((x, j) => j === i ? { ...x, url: e.target.value } : x))}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-xs focus:outline-none focus:border-gold/50 transition-colors" />
                         </div>
                       ))}
                     </div>

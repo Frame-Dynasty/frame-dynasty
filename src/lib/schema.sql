@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS frames (
   title TEXT NOT NULL,
   story TEXT NOT NULL,
   image_url TEXT NOT NULL,
+  blur_data TEXT,
   supplement_images JSONB DEFAULT '[]',
   credits JSONB DEFAULT '[]',
   video_url TEXT,

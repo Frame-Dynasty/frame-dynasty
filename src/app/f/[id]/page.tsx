@@ -4,6 +4,7 @@ import ShareButton from "./share-button";
 import VideoPlayer from "./video-player";
 import ScanTracker from "./scan-tracker";
 import ImageGallery from "./image-gallery";
+import LazyImage from "@/components/lazy-image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -14,8 +15,9 @@ interface Frame {
   title: string;
   story: string;
   image_url: string;
+  blur_data: string | null;
   supplement_images: string[];
-  credits: Record<string, string>;
+  credits: Record<string, string | { name: string; url?: string }>;
   accent_color: string | null;
 }
 
@@ -23,6 +25,7 @@ interface RelatedFrame {
   id: string;
   title: string;
   image_url: string;
+  blur_data: string | null;
 }
 
 export async function generateMetadata({
@@ -68,18 +71,18 @@ export default async function FramePage({
   const { id } = await params;
 
   const frame = await queryOne<Frame>(
-    "SELECT id, title, story, image_url, supplement_images, credits, accent_color FROM frames WHERE id = $1",
+    "SELECT id, title, story, image_url, blur_data, supplement_images, credits, accent_color FROM frames WHERE id = $1",
     [id]
   );
 
   if (!frame) notFound();
 
-  const credits: Record<string, string> = frame.credits || {};
+  const credits: Record<string, string | { name: string; url?: string }> = frame.credits || {};
 
   let related: RelatedFrame[] = [];
   try {
     related = await query<RelatedFrame>(
-      "SELECT id, title, image_url FROM frames WHERE id != $1 ORDER BY created_at DESC LIMIT 4",
+      "SELECT id, title, image_url, blur_data FROM frames WHERE id != $1 ORDER BY created_at DESC LIMIT 4",
       [id]
     );
   } catch {}
@@ -90,6 +93,7 @@ export default async function FramePage({
 
       <ImageGallery
         mainImage={frame.image_url}
+        mainBlur={frame.blur_data || undefined}
         supplementImages={frame.supplement_images || []}
         title={frame.title}
       />
@@ -125,11 +129,22 @@ export default async function FramePage({
         {Object.keys(credits).length > 0 && (
           <div className="mt-8 pt-6 border-t border-white/5">
             <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {Object.entries(credits).map(([role, name]) => (
-                <span key={role} className="text-white/40 text-sm font-[family-name:var(--font-montserrat)]">
-                  {role} by <span className="text-white/60">{name}</span>
-                </span>
-              ))}
+              {Object.entries(credits).map(([role, credit]) => {
+                const name = typeof credit === "string" ? credit : credit.name;
+                const url = typeof credit === "string" ? undefined : credit.url;
+                return (
+                  <span key={role} className="text-white/40 text-sm font-[family-name:var(--font-montserrat)]">
+                    {role} by{" "}
+                    {url ? (
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-gold transition-colors underline underline-offset-2">
+                        {name}
+                      </a>
+                    ) : (
+                      <span className="text-white/60">{name}</span>
+                    )}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
@@ -147,7 +162,13 @@ export default async function FramePage({
             {related.map((r) => (
               <Link key={r.id} href={`/f/${r.id}`} className="group block">
                 <div className="aspect-[3/4] overflow-hidden rounded-lg bg-white/5 mb-3">
-                  <img src={r.image_url} alt={r.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" />
+                  <LazyImage
+                    src={r.image_url}
+                    alt={r.title}
+                    blur={r.blur_data || undefined}
+                    className="w-full h-full"
+                    loading="lazy"
+                  />
                 </div>
                 <h3 className="font-[family-name:var(--font-montserrat)] text-sm text-white/60 group-hover:text-white transition-colors duration-150">
                   {r.title}
