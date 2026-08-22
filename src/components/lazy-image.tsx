@@ -78,7 +78,7 @@ export default function LazyImage({
         alt={alt}
         loading={loading}
         fetchPriority={fetchPriority as "high" | "low" | "auto"}
-        className={`w-full h-full object-cover transition-opacity duration-500 ${
+        className={`w-full h-full transition-opacity duration-500 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
       />

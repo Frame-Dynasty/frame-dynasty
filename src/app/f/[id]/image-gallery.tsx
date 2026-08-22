@@ -17,25 +17,27 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
   const allImages = [mainImage, ...supplementImages];
 
   return (
-    <div className="w-screen h-[100svh] relative overflow-hidden">
-      {/* Main image — absolute fill, no constraints */}
-      <LazyImage
-        src={activeImage}
-        alt={title}
-        blur={activeBlur}
-        className="absolute inset-0 w-full h-full"
-        fetchPriority="high"
-      />
+    <div className="w-full relative">
+      {/* Main image — full width */}
+      <div className="relative w-full">
+        <LazyImage
+          src={activeImage}
+          alt={title}
+          blur={activeBlur}
+          className="w-full"
+          fetchPriority="high"
+        />
 
-      {/* Dark gradient at bottom with title */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10 z-10">
-        <h1
-          className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_16px_rgba(0,0,0,1)]"
-          style={accentColor ? { color: accentColor } : undefined}
-        >
-          {title}
-        </h1>
+        {/* Dark gradient at bottom with title */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10 z-10">
+          <h1
+            className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_16px_rgba(0,0,0,1)] break-words"
+            style={accentColor ? { color: accentColor } : undefined}
+          >
+            {title}
+          </h1>
+        </div>
       </div>
 
       {/* Thumbnail strip — floats over image */}
