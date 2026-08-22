@@ -129,3 +129,55 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Quill editor dark theme */
+.rich-text-editor .ql-toolbar {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.rich-text-editor .ql-container {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  font-family: var(--font-montserrat) !important;
+  font-size: 0.875rem;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.rich-text-editor .ql-editor {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+}
+.rich-text-editor .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: normal;
+}
+.rich-text-editor .ql-snow .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.5);
+}
+.rich-text-editor .ql-snow .ql-fill {
+  fill: rgba(255, 255, 255, 0.5);
+}
+.rich-text-editor .ql-snow .ql-picker {
+  color: rgba(255, 255, 255, 0.5);
+}
+.rich-text-editor .ql-snow .ql-picker-options {
+  background: #111;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.rich-text-editor .ql-snow a {
+  color: #FFC825;
+}
+.rich-text-editor .ql-editor h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+.rich-text-editor .ql-editor h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}

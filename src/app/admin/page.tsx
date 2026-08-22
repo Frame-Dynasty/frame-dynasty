@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar, { SidebarSection } from "@/components/sidebar";
 import { extractDominantColor } from "@/lib/color-extract";
 import LazyImage, { generateBlur } from "@/components/lazy-image";
+import RichTextEditor from "@/components/rich-text-editor";
 
 interface Frame {
   id: string;
@@ -501,8 +502,7 @@ export default function AdminPage() {
 
                   <div>
                     <label className="block text-white/40 text-xs font-[family-name:var(--font-montserrat)] mb-1.5">Story</label>
-                    <textarea value={story} onChange={(e) => setStory(e.target.value)} required rows={6}
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 font-[family-name:var(--font-montserrat)] text-sm focus:outline-none focus:border-gold/50 transition-colors resize-y" />
+                    <RichTextEditor value={story} onChange={setStory} placeholder="Write the story..." />
                   </div>
 
                   {/* Accent color */}
