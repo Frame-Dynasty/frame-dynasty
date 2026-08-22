@@ -4,7 +4,7 @@ import { customAlphabet } from "nanoid";
 import { generateStyledQR } from "@/lib/qr";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 7);
-const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
+const R2_PUBLIC = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev";
 
 function toRelative(url: string): string {
   if (!url) return url;

@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
+const R2_PUBLIC = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev";
 
 function resolveUrl(path: string | null): string {
   if (!path) return "";

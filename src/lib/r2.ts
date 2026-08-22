@@ -7,9 +7,9 @@ const r2 = new AwsClient({
   region: "auto",
 });
 
-const BUCKET = process.env.CLOUDFLARE_R2_BUCKET_NAME || "customer-images";
-const PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
-const ENDPOINT = process.env.R2_ENDPOINT || "";
+const BUCKET = "framedynasty";
+const PUBLIC_URL = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev";
+const ENDPOINT = "https://92422e22ac11b09ca1b5fd9337401b56.r2.cloudflarestorage.com";
 
 export async function uploadImage(file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "jpg";
