@@ -17,9 +17,9 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
   const allImages = [mainImage, ...supplementImages];
 
   return (
-    <div>
-      {/* Main image — full viewport height on mobile */}
-      <div className="relative w-full h-[85vh] md:h-[80vh]">
+    <div className="-mx-0">
+      {/* Main image — full viewport on mobile */}
+      <div className="relative w-full h-[100svh] md:h-[85vh]">
         <LazyImage
           src={activeImage}
           alt={title}
@@ -29,10 +29,10 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
         />
 
         {/* Dark gradient at bottom with title */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-10">
           <h1
-            className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+            className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
             style={accentColor ? { color: accentColor } : undefined}
           >
             {title}

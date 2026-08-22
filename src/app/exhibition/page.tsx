@@ -4,6 +4,14 @@ import LazyImage from "@/components/lazy-image";
 
 export const dynamic = "force-dynamic";
 
+const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
+
+function resolveUrl(path: string | null): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${R2_PUBLIC}${path}`;
+}
+
 interface Frame {
   id: string;
   title: string;
@@ -15,6 +23,12 @@ export default async function ExhibitionPage() {
   const frames = await query<Frame>(
     "SELECT id, title, image_url, blur_data FROM frames ORDER BY created_at DESC"
   );
+
+  const resolved = frames.map((f) => ({
+    ...f,
+    image_url: resolveUrl(f.image_url),
+    blur_data: resolveUrl(f.blur_data),
+  }));
 
   return (
     <main className="min-h-screen">
@@ -57,7 +71,7 @@ export default async function ExhibitionPage() {
 
       {/* Grid */}
       <section className="max-w-[var(--max-content-width)] mx-auto px-6 pb-20">
-        {frames.length === 0 ? (
+        {resolved.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-white/40 font-[family-name:var(--font-montserrat)]">
               No pieces in the exhibition yet.
@@ -65,7 +79,7 @@ export default async function ExhibitionPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {frames.map((frame) => (
+            {resolved.map((frame) => (
               <Link
                 key={frame.id}
                 href={`/f/${frame.id}`}
