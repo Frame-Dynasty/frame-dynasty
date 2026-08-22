@@ -47,7 +47,7 @@ export async function generateMetadata({
       title: frame.title,
       description: excerpt,
       images: [{ url: frame.image_url, width: 1200, height: 630 }],
-      url: `https://frame-dynasty.com/f/${frame.id}`,
+      url: `https://framedynasty.com.ng/f/${frame.id}`,
       siteName: "Frame Dynasty",
       type: "website",
     },

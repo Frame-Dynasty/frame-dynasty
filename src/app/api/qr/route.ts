@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Frame not found" }, { status: 404 });
   }
 
-  const url = `https://frame-dynasty.com/f/${frame.id}`;
+  const url = `https://framedynasty.com.ng/f/${frame.id}`;
   const qr = await generateStyledQR(url, frame.accent_color || undefined);
 
   if (format === "png") {

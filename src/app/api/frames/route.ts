@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     [id, title, story, image_url, JSON.stringify(supImages), JSON.stringify(allCredits), accent_color || null, admin_name || null]
   );
 
-  const url = `https://frame-dynasty.com/f/${id}`;
+  const url = `https://framedynasty.com.ng/f/${id}`;
   const qr = await generateStyledQR(url, accent_color);
 
   return NextResponse.json({ id, url, qrPng: qr.png, qrSvg: qr.svg });
@@ -65,7 +65,7 @@ export async function PUT(request: Request) {
     ]
   );
 
-  const url = `https://frame-dynasty.com/f/${id}`;
+  const url = `https://framedynasty.com.ng/f/${id}`;
   const qr = await generateStyledQR(url, accent_color);
 
   return NextResponse.json({ id, url, qrPng: qr.png, qrSvg: qr.svg });

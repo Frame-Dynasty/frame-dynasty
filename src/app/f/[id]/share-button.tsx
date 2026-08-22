@@ -10,7 +10,7 @@ export default function ShareButton({
   title: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://frame-dynasty.com/f/${frameId}`;
+  const url = `https://framedynasty.com.ng/f/${frameId}`;
   const text = `Check out "${title}" on Frame Dynasty`;
 
   const platforms = [
