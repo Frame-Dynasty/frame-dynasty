@@ -34,17 +34,16 @@ export default async function HomePage() {
               className="w-48 md:w-64 lg:w-80 mx-auto drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
             />
           </div>
-
-          <h1 className="font-[family-name:var(--font-handorty)] text-4xl md:text-6xl lg:text-7xl text-white mb-12 animate-slide-up-delay-1 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] uppercase tracking-wider">
-            Frames that tell your story
-          </h1>
+<h1 className="font-[family-name:var(--font-handorty)] text-4xl md:text-6xl lg:text-7xl text-white mb-12 animate-slide-up-delay-1 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] tracking-wider">
+  Frames That Tell Your Story
+</h1>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up-delay-2">
             <Link
               href="/exhibition"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-gold text-black font-[family-name:var(--font-montserrat)] font-semibold hover:bg-gold-dark transition-colors duration-150 active:scale-[0.96] shadow-[0_4px_20px_rgba(255,200,37,0.25)]"
             >
-              Benin Past Exhibition
+              View our exhibitions
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -53,7 +52,7 @@ export default async function HomePage() {
               href="/gallery"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg border border-white/20 text-white font-[family-name:var(--font-montserrat)] font-medium hover:border-white/40 hover:bg-white/5 transition-all duration-150 active:scale-[0.96]"
             >
-              View our exhibitions
+              Explore gallery
             </Link>
           </div>
         </div>
