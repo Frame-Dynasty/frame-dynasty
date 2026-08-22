@@ -399,7 +399,7 @@ export default function AdminPage() {
                         dragging ? "border-gold bg-gold/5" : imageUrl ? "border-white/10" : "border-white/20 hover:border-white/30"
                       }`}
                     >
-                      <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+                      <input ref={fileInputRef} type="file" accept="image/*,.webp,.avif" className="hidden"
                         onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); }} />
 
                       {uploading ? (
@@ -456,7 +456,7 @@ export default function AdminPage() {
                         onClick={() => supplementInputRef.current?.click()}
                         className="w-full h-24 rounded-lg border-2 border-dashed border-white/20 hover:border-white/30 transition-colors cursor-pointer flex items-center justify-center"
                       >
-                        <input ref={supplementInputRef} type="file" accept="image/*" multiple className="hidden"
+                        <input ref={supplementInputRef} type="file" accept="image/*,.webp,.avif" multiple className="hidden"
                           onChange={(e) => { Array.from(e.target.files || []).forEach(uploadSupplement); e.target.value = ""; }} />
                         <div className="text-center">
                           <svg className="w-6 h-6 text-white/20 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
