@@ -96,16 +96,10 @@ export default async function FramePage({
         mainBlur={frame.blur_data || undefined}
         supplementImages={frame.supplement_images || []}
         title={frame.title}
+        accentColor={frame.accent_color}
       />
 
       <section className="max-w-[var(--max-text-width)] mx-auto px-6 py-12 md:py-16">
-        <h1
-          className="hidden md:block font-[family-name:var(--font-handorty)] text-4xl lg:text-5xl text-gold mb-8 animate-slide-up-delay-1"
-          style={frame.accent_color ? { color: frame.accent_color } : undefined}
-        >
-          {frame.title}
-        </h1>
-
         <div className="animate-slide-up-delay-2">
           <div className="prose prose-invert prose-lg max-w-none">
             {frame.story.split("\n\n").map((paragraph, i) => (

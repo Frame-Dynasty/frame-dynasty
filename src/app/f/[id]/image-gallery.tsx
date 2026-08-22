@@ -8,27 +8,41 @@ interface ImageGalleryProps {
   mainBlur?: string;
   supplementImages: string[];
   title: string;
+  accentColor?: string | null;
 }
 
-export default function ImageGallery({ mainImage, mainBlur, supplementImages, title }: ImageGalleryProps) {
+export default function ImageGallery({ mainImage, mainBlur, supplementImages, title, accentColor }: ImageGalleryProps) {
   const [activeImage, setActiveImage] = useState(mainImage);
   const [activeBlur, setActiveBlur] = useState(mainBlur);
   const allImages = [mainImage, ...supplementImages];
 
   return (
     <div>
-      {/* Main image */}
-      <LazyImage
-        src={activeImage}
-        alt={title}
-        blur={activeBlur}
-        className="w-full h-[60vh] md:h-[80vh]"
-        fetchPriority="high"
-      />
+      {/* Main image — full viewport height on mobile */}
+      <div className="relative w-full h-[85vh] md:h-[80vh]">
+        <LazyImage
+          src={activeImage}
+          alt={title}
+          blur={activeBlur}
+          className="w-full h-full"
+          fetchPriority="high"
+        />
+
+        {/* Dark gradient at bottom with title */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+          <h1
+            className="font-[family-name:var(--font-handorty)] text-3xl md:text-5xl text-gold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+            style={accentColor ? { color: accentColor } : undefined}
+          >
+            {title}
+          </h1>
+        </div>
+      </div>
 
       {/* Thumbnail strip */}
       {supplementImages.length > 0 && (
-        <div className="max-w-[var(--max-content-width)] mx-auto px-6 -mt-16 relative z-10 pb-4">
+        <div className="max-w-[var(--max-content-width)] mx-auto px-6 -mt-10 relative z-10 pb-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2">
             {allImages.map((url, i) => (
               <button
