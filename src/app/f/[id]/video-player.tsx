@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 
-const VIDEO_URL = "https://framedynasty.com.ng/videos/frame.mp4";
+const VIDEO_URL = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev/videos/frame.mp4";
 
 export default function VideoPlayer() {
   const containerRef = useRef<HTMLDivElement>(null);

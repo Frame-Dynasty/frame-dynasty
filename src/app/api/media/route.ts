@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const R2_PUBLIC = "https://framedynasty.com.ng";
+const R2_PUBLIC = process.env.R2_PUBLIC_URL || "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
