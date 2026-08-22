@@ -77,6 +77,7 @@ export default function AdminPage() {
   const [story, setStory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [blobUrl, setBlobUrl] = useState("");
+  const [imageChanged, setImageChanged] = useState(false);
   const [credits, setCredits] = useState<{ key: string; value: string; url: string }[]>([]);
   const [accentColor, setAccentColor] = useState("");
   const [autoAccent, setAutoAccent] = useState(true);
@@ -155,6 +156,7 @@ export default function AdminPage() {
   // Upload — single image
   async function uploadFile(file: File) {
     setUploading(true);
+    setImageChanged(true);
     const preview = URL.createObjectURL(file);
     setBlobUrl(preview);
 
@@ -224,6 +226,7 @@ export default function AdminPage() {
     setStory("");
     setImageUrl("");
     setBlobUrl("");
+    setImageChanged(false);
     setCredits([]);
     setAccentColor("");
     setAutoAccent(true);
@@ -238,6 +241,7 @@ export default function AdminPage() {
     setStory(frame.story);
     setImageUrl(frame.image_url);
     setBlobUrl("");
+    setImageChanged(false);
     const c = frame.credits || {};
     setCredits(
       Object.entries(c).map(([key, val]) => ({
@@ -269,7 +273,7 @@ export default function AdminPage() {
       ...(editing ? { id: editing.id } : {}),
       title,
       story,
-      image_url: imageUrl,
+      image_url: !editing || imageChanged ? imageUrl : undefined,
       blur_data: blurData || null,
       supplement_images: supplementImages,
       credits: creditsObj,
