@@ -3,6 +3,7 @@ import { queryOne, query } from "@/lib/db";
 import ShareButton from "./share-button";
 import VideoPlayer from "./video-player";
 import ScanTracker from "./scan-tracker";
+import ImageGallery from "./image-gallery";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -13,6 +14,7 @@ interface Frame {
   title: string;
   story: string;
   image_url: string;
+  supplement_images: string[];
   credits: Record<string, string>;
   accent_color: string | null;
 }
@@ -66,7 +68,7 @@ export default async function FramePage({
   const { id } = await params;
 
   const frame = await queryOne<Frame>(
-    "SELECT id, title, story, image_url, credits, accent_color FROM frames WHERE id = $1",
+    "SELECT id, title, story, image_url, supplement_images, credits, accent_color FROM frames WHERE id = $1",
     [id]
   );
 
@@ -86,23 +88,11 @@ export default async function FramePage({
     <main className="min-h-screen">
       <ScanTracker frameId={frame.id} />
 
-      <section className="relative w-full h-[70vh] md:h-[85vh] animate-frame-reveal">
-        <img
-          src={frame.image_url}
-          alt={frame.title}
-          className="w-full h-full object-cover"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:hidden" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:hidden">
-          <h1
-            className="font-[family-name:var(--font-handorty)] text-3xl text-gold animate-slide-up-delay-1"
-            style={frame.accent_color ? { color: frame.accent_color } : undefined}
-          >
-            {frame.title}
-          </h1>
-        </div>
-      </section>
+      <ImageGallery
+        mainImage={frame.image_url}
+        supplementImages={frame.supplement_images || []}
+        title={frame.title}
+      />
 
       <section className="max-w-[var(--max-text-width)] mx-auto px-6 py-12 md:py-16">
         <h1

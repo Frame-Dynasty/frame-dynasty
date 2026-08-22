@@ -9,6 +9,7 @@ interface Frame {
   title: string;
   story: string;
   image_url: string;
+  supplement_images: string[];
   credits: Record<string, string>;
   accent_color: string | null;
   created_at: string;
@@ -76,6 +77,7 @@ export default function AdminPage() {
   const [credits, setCredits] = useState<{ key: string; value: string }[]>([]);
   const [accentColor, setAccentColor] = useState("");
   const [autoAccent, setAutoAccent] = useState(true);
+  const [supplementImages, setSupplementImages] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -91,6 +93,7 @@ export default function AdminPage() {
 
   const svgRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const supplementInputRef = useRef<HTMLInputElement>(null);
   const imgPreviewRef = useRef<HTMLImageElement>(null);
 
   const isSuperuser = adminName === "superuser";
@@ -166,6 +169,21 @@ export default function AdminPage() {
     if (file && file.type.startsWith("image/")) uploadFile(file);
   }, []);
 
+  async function uploadSupplement(file: File) {
+    if (supplementImages.length >= 10) return;
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: form });
+    const data = await res.json();
+    if (data.url) setSupplementImages((prev) => [...prev, data.url].slice(0, 10));
+  }
+
+  const handleSupplementDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    files.slice(0, 10 - supplementImages.length).forEach(uploadSupplement);
+  }, [supplementImages.length]);
+
   // Auth
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -198,6 +216,7 @@ export default function AdminPage() {
     setCredits([]);
     setAccentColor("");
     setAutoAccent(true);
+    setSupplementImages([]);
     setQrData(null);
   }
 
@@ -211,6 +230,7 @@ export default function AdminPage() {
     setCredits(Object.entries(c).map(([key, value]) => ({ key, value })));
     setAccentColor(frame.accent_color || "");
     setAutoAccent(false);
+    setSupplementImages(frame.supplement_images || []);
     setQrData(null);
   }
 
@@ -225,6 +245,7 @@ export default function AdminPage() {
       title,
       story,
       image_url: imageUrl,
+      supplement_images: supplementImages,
       credits: creditsObj,
       accent_color: accentColor || null,
       admin_name: adminName,
@@ -403,6 +424,48 @@ export default function AdminPage() {
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  {/* Supplement images */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-white/40 text-xs font-[family-name:var(--font-montserrat)]">
+                        Supplement Images ({supplementImages.length}/10)
+                      </label>
+                    </div>
+                    {supplementImages.length > 0 && (
+                      <div className="grid grid-cols-5 gap-2 mb-3">
+                        {supplementImages.map((url, i) => (
+                          <div key={i} className="relative aspect-square rounded-lg overflow-hidden group">
+                            <img src={url} alt={`Supplement ${i + 1}`} className="w-full h-full object-cover" />
+                            <button type="button"
+                              onClick={() => setSupplementImages((prev) => prev.filter((_, j) => j !== i))}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white/60 hover:text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {supplementImages.length < 10 && (
+                      <div
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={handleSupplementDrop}
+                        onClick={() => supplementInputRef.current?.click()}
+                        className="w-full h-24 rounded-lg border-2 border-dashed border-white/20 hover:border-white/30 transition-colors cursor-pointer flex items-center justify-center"
+                      >
+                        <input ref={supplementInputRef} type="file" accept="image/*" multiple className="hidden"
+                          onChange={(e) => { Array.from(e.target.files || []).forEach(uploadSupplement); e.target.value = ""; }} />
+                        <div className="text-center">
+                          <svg className="w-6 h-6 text-white/20 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                          </svg>
+                          <span className="text-white/30 text-xs font-[family-name:var(--font-montserrat)]">Add images (max 10)</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>

@@ -23,21 +23,7 @@ export default async function HomePage() {
     <main className="min-h-screen">
       {/* Hero */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Video background — drop hero-video.mp4 in public/ */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-          <source src="/hero-video.webm" type="video/webm" />
-        </video>
-
-        {/* Image fallback with Ken Burns — swap gradient for url('/hero.jpg') */}
         <div className="hero-bg animate-ken-burns" />
-        <div className="hero-overlay" />
 
         {/* Content */}
         <div className="relative z-10 text-center px-6">
@@ -45,18 +31,18 @@ export default async function HomePage() {
             <img
               src="/logo.png"
               alt="Frame Dynasty"
-              className="w-48 md:w-64 lg:w-80 mx-auto"
+              className="w-48 md:w-64 lg:w-80 mx-auto drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)]"
             />
           </div>
 
-          <p className="font-[family-name:var(--font-montserrat)] text-white/60 text-lg md:text-xl max-w-xl mx-auto mb-12 animate-slide-up-delay-1">
+          <h1 className="font-[family-name:var(--font-handorty)] text-4xl md:text-6xl lg:text-7xl text-white mb-12 animate-slide-up-delay-1 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] uppercase tracking-wider">
             Frames that tell your story
-          </p>
+          </h1>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up-delay-2">
             <Link
               href="/exhibition"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-orange text-white font-[family-name:var(--font-montserrat)] font-semibold hover:bg-orange-dark transition-colors duration-150 active:scale-[0.96]"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-gold text-black font-[family-name:var(--font-montserrat)] font-semibold hover:bg-gold-dark transition-colors duration-150 active:scale-[0.96] shadow-[0_4px_20px_rgba(255,200,37,0.25)]"
             >
               Benin Past Exhibition
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -65,9 +51,9 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/gallery"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg border border-gold/30 text-gold font-[family-name:var(--font-montserrat)] font-medium hover:border-gold/60 hover:bg-gold/5 transition-all duration-150 active:scale-[0.96]"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg border border-white/20 text-white font-[family-name:var(--font-montserrat)] font-medium hover:border-white/40 hover:bg-white/5 transition-all duration-150 active:scale-[0.96]"
             >
-              View Our Work
+              View our exhibitions
             </Link>
           </div>
         </div>

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS frames (
   title TEXT NOT NULL,
   story TEXT NOT NULL,
   image_url TEXT NOT NULL,
-  images JSONB DEFAULT '[]',
+  supplement_images JSONB DEFAULT '[]',
   credits JSONB DEFAULT '[]',
   video_url TEXT,
   accent_color TEXT,
