@@ -4,12 +4,30 @@ import { customAlphabet } from "nanoid";
 import { generateStyledQR } from "@/lib/qr";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 7);
+const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
+
+function resolveUrl(path: string | null): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${R2_PUBLIC}${path}`;
+}
+
+function resolveFrame(frame: Record<string, unknown>) {
+  return {
+    ...frame,
+    image_url: resolveUrl(frame.image_url as string),
+    blur_data: frame.blur_data ? resolveUrl(frame.blur_data as string) : null,
+    supplement_images: Array.isArray(frame.supplement_images)
+      ? (frame.supplement_images as string[]).map(resolveUrl)
+      : [],
+  };
+}
 
 export async function GET() {
   const frames = await query(
     "SELECT id, title, story, image_url, blur_data, supplement_images, credits, accent_color, created_at FROM frames ORDER BY created_at DESC"
   );
-  return NextResponse.json(frames);
+  return NextResponse.json(frames.map(resolveFrame));
 }
 
 export async function POST(request: Request) {

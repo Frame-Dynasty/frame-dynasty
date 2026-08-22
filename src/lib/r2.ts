@@ -31,5 +31,5 @@ export async function uploadImage(file: File): Promise<string> {
     throw new Error(`R2 upload failed (${res.status}): ${text}`);
   }
 
-  return `${PUBLIC_URL}/${key}`;
+  return `/${key}`;
 }

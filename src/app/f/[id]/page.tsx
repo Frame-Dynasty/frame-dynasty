@@ -10,6 +10,14 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+const R2_PUBLIC = process.env.R2_PUBLIC_URL || "";
+
+function resolveUrl(path: string | null): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${R2_PUBLIC}${path}`;
+}
+
 interface Frame {
   id: string;
   title: string;
@@ -77,6 +85,10 @@ export default async function FramePage({
 
   if (!frame) notFound();
 
+  frame.image_url = resolveUrl(frame.image_url);
+  frame.blur_data = resolveUrl(frame.blur_data);
+  frame.supplement_images = (frame.supplement_images || []).map(resolveUrl);
+
   const credits: Record<string, string | { name: string; url?: string }> = frame.credits || {};
 
   let related: RelatedFrame[] = [];
@@ -85,6 +97,11 @@ export default async function FramePage({
       "SELECT id, title, image_url, blur_data FROM frames WHERE id != $1 ORDER BY created_at DESC LIMIT 4",
       [id]
     );
+    related = related.map((r) => ({
+      ...r,
+      image_url: resolveUrl(r.image_url),
+      blur_data: resolveUrl(r.blur_data),
+    }));
   } catch {}
 
   return (
