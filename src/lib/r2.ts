@@ -8,7 +8,7 @@ const r2 = new AwsClient({
 });
 
 const BUCKET = process.env.CLOUDFLARE_R2_BUCKET_NAME || "customer-images";
-const PUBLIC_URL = process.env.R2_PUBLIC_URL || "https://framedynasty.com.ng";
+const PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
 const ENDPOINT = process.env.R2_ENDPOINT || "";
 
 export async function uploadImage(file: File): Promise<string> {
