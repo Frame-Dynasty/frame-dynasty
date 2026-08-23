@@ -5,6 +5,7 @@ import VideoPlayer from "./video-player";
 import ScanTracker from "./scan-tracker";
 import ImageGallery from "./image-gallery";
 import LazyImage from "@/components/lazy-image";
+import AudioPlayer from "@/components/audio-player";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -127,7 +128,9 @@ export default async function FramePage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
               </svg>
             </div>
-            <audio controls src={frame.audio_url} className="flex-1 h-8" />
+            <div className="flex-1 min-w-0">
+              <AudioPlayer src={frame.audio_url} />
+            </div>
           </div>
         )}
 

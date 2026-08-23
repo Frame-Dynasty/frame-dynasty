@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar, { SidebarSection } from "@/components/sidebar";
 import { extractDominantColor } from "@/lib/color-extract";
 import LazyImage, { generateBlur } from "@/components/lazy-image";
+import AudioPlayer from "@/components/audio-player";
 import RichTextEditor from "@/components/rich-text-editor";
 
 interface Frame {
@@ -550,7 +551,9 @@ export default function AdminPage() {
                         <svg className="w-5 h-5 text-gold flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                         </svg>
-                        <audio controls src={audioBlobUrl || audioUrl} className="h-8 flex-1 min-w-0" />
+                        <div className="flex-1 min-w-0">
+                          <AudioPlayer src={audioBlobUrl || audioUrl} />
+                        </div>
                         <button type="button" onClick={() => { setAudioUrl(""); setAudioBlobUrl(""); }}
                           className="text-white/30 hover:text-red-400 transition-colors p-1 flex-shrink-0">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
