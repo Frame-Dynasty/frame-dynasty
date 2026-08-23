@@ -15,6 +15,14 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef(0);
 
+  const goNext = useCallback(() => {
+    setActiveIndex((i) => Math.min(i + 1, supplementImages.length - 1));
+  }, [supplementImages.length]);
+
+  const goPrev = useCallback(() => {
+    setActiveIndex((i) => Math.max(i - 1, 0));
+  }, []);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   }, []);
@@ -22,12 +30,9 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) < 50) return;
-    if (diff > 0 && activeIndex < supplementImages.length - 1) {
-      setActiveIndex((i) => i + 1);
-    } else if (diff < 0 && activeIndex > 0) {
-      setActiveIndex((i) => i - 1);
-    }
-  }, [activeIndex, supplementImages.length]);
+    if (diff > 0) goNext();
+    else goPrev();
+  }, [goNext, goPrev]);
 
   return (
     <div className="w-full">
@@ -59,19 +64,54 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
             Gallery ({supplementImages.length} more)
           </p>
 
-          {/* Active supplement preview — fixed 16:9 aspect */}
-          <div
-            className="w-full aspect-video rounded-xl overflow-hidden bg-black/80 mb-3 touch-pan-y"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <LazyImage
-              src={supplementImages[activeIndex]}
-              alt={`${title} ${activeIndex + 2}`}
-              className="w-full h-full"
-              loading="lazy"
-              backdrop
-            />
+          {/* Sliding preview with arrows */}
+          <div className="relative group mb-3">
+            <div
+              className="w-full aspect-video rounded-xl overflow-hidden bg-black/80 touch-pan-y"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div
+                className="flex w-full h-full transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+              >
+                {supplementImages.map((url, i) => (
+                  <div key={i} className="flex-shrink-0 w-full h-full">
+                    <LazyImage
+                      src={url}
+                      alt={`${title} ${i + 2}`}
+                      className="w-full h-full"
+                      loading="lazy"
+                      backdrop
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Arrows — only show if more than 1 image */}
+            {supplementImages.length > 1 && (
+              <>
+                <button
+                  onClick={goPrev}
+                  disabled={activeIndex === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/70 transition-all disabled:opacity-0 disabled:pointer-events-none opacity-0 group-hover:opacity-100"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={goNext}
+                  disabled={activeIndex === supplementImages.length - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/70 transition-all disabled:opacity-0 disabled:pointer-events-none opacity-0 group-hover:opacity-100"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
           </div>
 
           {/* Thumbnails */}
