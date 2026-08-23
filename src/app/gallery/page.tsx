@@ -110,7 +110,9 @@ export default async function GalleryPage() {
             hear from you.
           </p>
           <a
-            href="#"
+            href="https://linktr.ee/framedynasty"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-orange text-white font-[family-name:var(--font-montserrat)] font-medium hover:bg-orange-dark transition-colors duration-150 active:scale-[0.96]"
           >
             Get in Touch
