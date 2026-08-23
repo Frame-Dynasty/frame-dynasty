@@ -3,6 +3,14 @@ import { query } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+const R2_PUBLIC = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev";
+
+function resolveUrl(path: string | null): string {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${R2_PUBLIC}${path}`;
+}
+
 interface Frame {
   id: string;
   title: string;
@@ -13,6 +21,11 @@ export default async function GalleryPage() {
   const frames = await query<Frame>(
     "SELECT id, title, image_url FROM frames ORDER BY created_at DESC LIMIT 12"
   );
+
+  const resolved = frames.map((f) => ({
+    ...f,
+    image_url: resolveUrl(f.image_url),
+  }));
 
   return (
     <main className="min-h-screen">
@@ -55,7 +68,7 @@ export default async function GalleryPage() {
 
       {/* Gallery grid */}
       <section className="max-w-[var(--max-content-width)] mx-auto px-6 pb-12">
-        {frames.length === 0 ? (
+        {resolved.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-white/40 font-[family-name:var(--font-montserrat)]">
               Gallery coming soon.
@@ -63,7 +76,7 @@ export default async function GalleryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {frames.map((frame) => (
+            {resolved.map((frame) => (
               <Link
                 key={frame.id}
                 href={`/f/${frame.id}`}
