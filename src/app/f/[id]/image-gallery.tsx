@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import LazyImage from "@/components/lazy-image";
 
 interface ImageGalleryProps {
@@ -13,6 +13,21 @@ interface ImageGalleryProps {
 
 export default function ImageGallery({ mainImage, mainBlur, supplementImages, title, accentColor }: ImageGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) < 50) return;
+    if (diff > 0 && activeIndex < supplementImages.length - 1) {
+      setActiveIndex((i) => i + 1);
+    } else if (diff < 0 && activeIndex > 0) {
+      setActiveIndex((i) => i - 1);
+    }
+  }, [activeIndex, supplementImages.length]);
 
   return (
     <div className="w-full">
@@ -45,7 +60,11 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
           </p>
 
           {/* Active supplement preview — fixed 16:9 aspect */}
-          <div className="w-full aspect-video rounded-xl overflow-hidden bg-black/80 mb-3">
+          <div
+            className="w-full aspect-video rounded-xl overflow-hidden bg-black/80 mb-3 touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <LazyImage
               src={supplementImages[activeIndex]}
               alt={`${title} ${activeIndex + 2}`}
