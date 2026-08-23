@@ -65,8 +65,8 @@ const NAV_ITEMS: SidebarSection[] = [
 ];
 
 export default function AdminPage() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [adminName, setAdminName] = useState("");
+  const [loggedIn, setLoggedIn] = useState(() => typeof window !== "undefined" && !!localStorage.getItem("admin_name"));
+  const [adminName, setAdminName] = useState(() => typeof window !== "undefined" ? localStorage.getItem("admin_name") || "" : "");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [activeSection, setActiveSection] = useState("frames");
@@ -246,6 +246,7 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.ok) {
         setLoggedIn(true);
+        localStorage.setItem("admin_name", adminName);
         if (adminName === "superuser") fetchAdmins();
       } else {
         setLoginError("Invalid credentials");
@@ -420,7 +421,7 @@ export default function AdminPage() {
               </h2>
             </div>
             <button
-              onClick={() => setLoggedIn(false)}
+              onClick={() => { localStorage.removeItem("admin_name"); setLoggedIn(false); setAdminName(""); }}
               className="text-white/30 hover:text-white/60 text-sm font-[family-name:var(--font-montserrat)] transition-colors"
             >
               Sign Out
