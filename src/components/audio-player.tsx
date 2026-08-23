@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { registerMedia, unregisterMedia } from "@/lib/media-store";
 
 interface AudioPlayerProps {
   src: string;
@@ -26,8 +27,12 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   const toggle = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
-    if (a.paused) a.play();
-    else a.pause();
+    if (a.paused) {
+      registerMedia(a);
+      a.play();
+    } else {
+      a.pause();
+    }
   }, []);
 
   const seek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -43,7 +48,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
     const a = audioRef.current;
     if (!a) return;
 
-    const onPlay = () => setPlaying(true);
+    const onPlay = () => { registerMedia(a); setPlaying(true); };
     const onPause = () => setPlaying(false);
     const onTime = () => { if (!dragging) setCurrent(a.currentTime); };
     const onLoaded = () => setDuration(a.duration);
@@ -61,6 +66,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
       a.removeEventListener("timeupdate", onTime);
       a.removeEventListener("loadedmetadata", onLoaded);
       a.removeEventListener("ended", onEnd);
+      unregisterMedia(a);
     };
   }, [dragging]);
 

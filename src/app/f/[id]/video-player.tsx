@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { registerMedia, unregisterMedia } from "@/lib/media-store";
 
 const VIDEO_URL = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev/videos/frame.mp4";
 
@@ -18,6 +19,7 @@ export default function VideoPlayer() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          registerMedia(video);
           video.play().catch(() => {});
           setPlaying(true);
         } else {
@@ -29,13 +31,14 @@ export default function VideoPlayer() {
     );
 
     observer.observe(containerRef.current!);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); unregisterMedia(video); };
   }, []);
 
   function togglePlay() {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
+      registerMedia(video);
       video.play();
       setPlaying(true);
     } else {
