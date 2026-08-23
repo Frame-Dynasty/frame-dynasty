@@ -184,7 +184,7 @@ export default function AdminPage() {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) uploadFile(file);
+    if (file && (file.type.startsWith("image/") || /\.(jpe?g|png|webp|avif|gif|bmp|svg)$/i.test(file.name))) uploadFile(file);
   }, []);
 
   async function uploadSupplement(file: File) {
@@ -206,7 +206,9 @@ export default function AdminPage() {
 
   const handleSupplementDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/") || /\.(jpe?g|png|webp|avif|gif|bmp|svg)$/i.test(f.name)
+    );
     files.slice(0, 10 - supplementImages.length).forEach(uploadSupplement);
   }, [supplementImages.length]);
 

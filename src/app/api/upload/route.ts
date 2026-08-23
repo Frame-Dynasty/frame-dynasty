@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { uploadImage } from "@/lib/r2";
 
+const IMAGE_EXTS = /\.(jpe?g|png|webp|avif|gif|bmp|svg)$/i;
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -10,7 +12,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (!file.type.startsWith("image/")) {
+    const isImage = file.type.startsWith("image/") || IMAGE_EXTS.test(file.name);
+    if (!isImage) {
       return NextResponse.json({ error: "File must be an image" }, { status: 400 });
     }
 
