@@ -215,11 +215,21 @@ export default function AdminPage() {
   async function uploadAudio(file: File) {
     setUploadingAudio(true);
     setAudioBlobUrl(URL.createObjectURL(file));
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: form });
-    const data = await res.json();
-    if (data.url) setAudioUrl(data.url);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const data = await res.json();
+      if (data.url) {
+        setAudioUrl(data.url);
+      } else {
+        alert(data.error || "Audio upload failed");
+        setAudioBlobUrl("");
+      }
+    } catch {
+      alert("Audio upload failed");
+      setAudioBlobUrl("");
+    }
     setUploadingAudio(false);
   }
 

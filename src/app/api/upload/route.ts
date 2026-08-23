@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { uploadImage } from "@/lib/r2";
 
 const IMAGE_EXTS = /\.(jpe?g|png|webp|avif|gif|bmp|svg)$/i;
+const AUDIO_EXTS = /\.(mp3|wav|ogg|m4a|aac|flac)$/i;
 
 export async function POST(request: Request) {
   try {
@@ -13,12 +14,15 @@ export async function POST(request: Request) {
     }
 
     const isImage = file.type.startsWith("image/") || IMAGE_EXTS.test(file.name);
-    if (!isImage) {
-      return NextResponse.json({ error: "File must be an image" }, { status: 400 });
+    const isAudio = file.type.startsWith("audio/") || AUDIO_EXTS.test(file.name);
+
+    if (!isImage && !isAudio) {
+      return NextResponse.json({ error: "File must be an image or audio" }, { status: 400 });
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+    const maxSize = isAudio ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File too large (max ${isAudio ? "50MB" : "10MB"})` }, { status: 400 });
     }
 
     const url = await uploadImage(file);
