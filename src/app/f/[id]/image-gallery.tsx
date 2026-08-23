@@ -45,12 +45,13 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
           </p>
 
           {/* Active supplement preview — fixed 16:9 aspect */}
-          <div className="w-full aspect-video rounded-xl overflow-hidden bg-white/5 mb-3">
+          <div className="w-full aspect-video rounded-xl overflow-hidden bg-black/80 mb-3">
             <LazyImage
               src={supplementImages[activeIndex]}
               alt={`${title} ${activeIndex + 2}`}
               className="w-full h-full"
               loading="lazy"
+              backdrop
             />
           </div>
 
@@ -66,7 +67,7 @@ export default function ImageGallery({ mainImage, mainBlur, supplementImages, ti
                     : "border-white/10 opacity-60 hover:opacity-100"
                 }`}
               >
-                <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                <img src={url} alt="" className="w-full h-full object-contain bg-black/80" loading="lazy" />
               </button>
             ))}
           </div>

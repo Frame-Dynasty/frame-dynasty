@@ -9,6 +9,7 @@ interface LazyImageProps {
   className?: string;
   fetchPriority?: "high" | "low" | "auto";
   loading?: "lazy" | "eager" | undefined;
+  backdrop?: boolean;
 }
 
 export default function LazyImage({
@@ -18,6 +19,7 @@ export default function LazyImage({
   className = "",
   fetchPriority = "auto",
   loading = "lazy",
+  backdrop = false,
 }: LazyImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -71,6 +73,16 @@ export default function LazyImage({
         </div>
       )}
 
+      {/* Backdrop: blurred, scaled-up copy filling the container */}
+      {backdrop && (
+        <img
+          src={src}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-50"
+        />
+      )}
+
       {/* Actual image */}
       <img
         ref={imgRef}
@@ -78,7 +90,7 @@ export default function LazyImage({
         alt={alt}
         loading={loading}
         fetchPriority={fetchPriority as "high" | "low" | "auto"}
-        className={`w-full h-full object-cover transition-opacity duration-500 ${
+        className={`w-full h-full ${backdrop ? "relative object-contain" : "object-cover"} transition-opacity duration-500 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
       />
