@@ -169,11 +169,19 @@ export default function AdminPage() {
     const [blur] = await Promise.all([
       generateBlur(file),
       (async () => {
-        const form = new FormData();
-        form.append("file", file);
-        const res = await fetch("/api/upload", { method: "POST", body: form });
-        const data = await res.json();
-        if (data.url) setImageUrl(data.url);
+        try {
+          const form = new FormData();
+          form.append("file", file);
+          const res = await fetch("/api/upload", { method: "POST", body: form });
+          const data = await res.json();
+          if (data.url) {
+            setImageUrl(data.url);
+          } else {
+            alert(data.error || "Image upload failed");
+          }
+        } catch {
+          alert("Image upload failed — network error");
+        }
       })(),
     ]);
 
@@ -198,10 +206,10 @@ export default function AdminPage() {
       if (data.url) {
         setSupplementImages((prev) => [...prev, data.url].slice(0, 10));
       } else {
-        console.error("Upload failed:", data.error);
+        alert(data.error || "Image upload failed");
       }
-    } catch (err) {
-      console.error("Upload error:", err);
+    } catch {
+      alert("Image upload failed — network error");
     }
   }
 
