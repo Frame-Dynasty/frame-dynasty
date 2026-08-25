@@ -145,8 +145,8 @@ export default async function FramePage({
               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2
               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
               [&_li]:text-white/70
-              [&_blockquote]:border-l-2 [&_blockquote]:border-gold/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-white/60
-              break-words"
+              [&_blockquote]:border-l-2 [&_blockquote]:border-gold/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-white/60"
+            style={{ overflowWrap: "break-word", wordBreak: "normal" }}
             dangerouslySetInnerHTML={{ __html: frame.story }}
           />
         </div>
