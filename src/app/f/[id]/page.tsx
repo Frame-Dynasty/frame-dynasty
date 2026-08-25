@@ -19,6 +19,10 @@ function resolveUrl(path: string | null): string {
   return `${R2_PUBLIC}${path}`;
 }
 
+function cleanHtml(html: string): string {
+  return html.replace(/&nbsp;/g, " ").replace(/&#160;/g, " ").replace(/\u00A0/g, " ");
+}
+
 interface Frame {
   id: string;
   title: string;
@@ -136,7 +140,7 @@ export default async function FramePage({
 
         <div className="animate-slide-up-delay-2">
           <div
-            className="font-[family-name:var(--font-montserrat)] text-white/80 leading-relaxed text-base md:text-lg space-y-6
+            className="font-[family-name:var(--font-montserrat)] text-white/80 leading-relaxed text-base md:text-lg space-y-6 whitespace-normal break-normal
               [&_h2]:font-[family-name:var(--font-handorty)] [&_h2]:text-2xl [&_h2]:text-gold [&_h2]:mt-10 [&_h2]:mb-4
               [&_h3]:font-[family-name:var(--font-handorty)] [&_h3]:text-xl [&_h3]:text-gold [&_h3]:mt-8 [&_h3]:mb-3
               [&_a]:text-gold [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-gold-dark
@@ -145,9 +149,9 @@ export default async function FramePage({
               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2
               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
               [&_li]:text-white/70
-              [&_blockquote]:border-l-2 [&_blockquote]:border-gold/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-white/60"
-            style={{ overflowWrap: "break-word", wordBreak: "normal", whiteSpace: "normal" }}
-            dangerouslySetInnerHTML={{ __html: frame.story }}
+              [&_blockquote]:border-l-2 [&_blockquote]:border-gold/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-white/60
+              [&_p]:whitespace-normal [&_p]:break-normal [&_*]:whitespace-normal"
+            dangerouslySetInnerHTML={{ __html: cleanHtml(frame.story) }}
           />
         </div>
 
