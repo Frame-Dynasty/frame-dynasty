@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { registerMedia, unregisterMedia } from "@/lib/media-store";
 
-const VIDEO_URL = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev/videos/frame.mp4";
+const VIDEO_URL = "https://pub-6ff7acfeb6774783bdea82b8fa66e289.r2.dev/videos/chief-ero.mp4";
 
 export default function VideoPlayer() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,6 +66,7 @@ export default function VideoPlayer() {
         muted
         loop
         playsInline
+        preload="metadata"
         className="w-full h-full object-cover"
         onClick={togglePlay}
       >

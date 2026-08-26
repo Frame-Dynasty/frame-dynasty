@@ -48,7 +48,7 @@ bun-debug.log*
 next-env.d.ts
 
 # large files
-frame.mp4
+*.mp4
 handorty.zip
 logo_frame_dynasty.jpg
 "frame dynasty logo.png"

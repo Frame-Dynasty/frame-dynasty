@@ -121,10 +121,8 @@ export default async function HomePage() {
             </Link>
           </nav>
         </div>
-        <div className="text-center mt-6">
-          <a href="https://wa.me/2349066973845?text=Hi%20Apostle%2C%20I%20visited%20Frame%20Dynasty%20website%20and%20would%20love%20to%20connect!" target="_blank" rel="noopener noreferrer" className="text-white/20 text-xs font-[family-name:var(--font-montserrat)] hover:text-gold transition-colors">
-            Made by #Apostle
-          </a>
+        <div className="text-center mt-6 text-xs font-[family-name:var(--font-montserrat)] text-white/20">
+          Website built by <a href="https://wa.me/2349066973845?text=Hi%20Apostle%2C%20I%20visited%20Frame%20Dynasty%20website%20and%20would%20love%20to%20connect!" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-dark transition-colors">#Apostle</a>
         </div>
       </footer>
     </main>
